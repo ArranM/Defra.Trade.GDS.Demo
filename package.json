@@ -1,0 +1,21 @@
+{
+  "name": "defra.trade.gds.demo",
+  "version": "1.0.0",
+  "description": "Developer Portal GDS test",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "govuk-frontend": "^4.3.0",
+    "gulp": "^4.0.2",
+    "gulp-rimraf": "^1.0.0",
+    "gulp-sass": "^5.1.0",
+    "sass": "^1.54.4"
+  },
+  "dependencies": {
+    "glob-parent": "^6.0.2"
+  }
+}
