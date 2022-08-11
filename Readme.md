@@ -1,6 +1,9 @@
 * npm install --global gulp-cli
-* npm install --save-dev gulp
 * npm install
+
+If you get error about permission : 
+
+*Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 In the terminal run : gulp run:dev , this will initially clean generated folders/content and generate new files
 
