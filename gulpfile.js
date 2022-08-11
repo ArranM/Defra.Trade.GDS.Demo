@@ -30,7 +30,7 @@ task('copyGovImageTask', () => {
 
 // copy govuk-frontend-toolkit image to public folder
 task('copyGovFontTask', () => {
-    return gulp.src(govpath.govukimage)
+    return gulp.src(govpath.govukfonts)
         .pipe(gulp.dest(wwwrootpath.fonts));
 });
 
