@@ -1,6 +1,7 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass')(require('sass'));
 const rimraf = require('gulp-rimraf');
+const minify = require('gulp-minify');
 
 const { series, task } = gulp;
 
@@ -32,6 +33,7 @@ task('private:copyGovTask', () => {
         .pipe(gulp.dest(wwwrootpath.fonts));
 
     gulp.src('./node_modules/govuk-frontend/govuk/all.js')
+        .pipe(minify({ ext: { min: '.js' }, noSource: true }))
         .pipe(gulp.dest(wwwrootpath.js));
 
     return gulp.src(['./scss/**/frontend.scss'])
@@ -45,11 +47,18 @@ task('private:sassTask', () => {
         .pipe(gulp.dest('./wwwroot/css'));
 });
 
+task('private:jsTask', () => {
+    return gulp.src(['./javascript/**/*.js'])
+        .pipe(minify({ ignoreFiles: ['.min.js'], noSource: true }))
+        .pipe(gulp.dest('./wwwroot/js'));
+});
+
 // watch scss files for changes excluding frontend toolkit, 
 task('private:watchTask', () => {
     gulp.watch(['./scss/**/*.scss'], series(['private:sassTask']));
+    gulp.watch(['./javascript/**/*.js'], series(['private:jsTask']));
 });
 
 // default tasks - 
-task('private:initTask', series(['private:copyGovTask', 'private:sassTask']));
+task('private:initTask', series(['private:copyGovTask', 'private:sassTask', 'private:jsTask']));
 task('run:dev', series(['private:initTask', 'private:watchTask']));
