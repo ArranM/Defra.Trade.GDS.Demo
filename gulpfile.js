@@ -60,5 +60,4 @@ task('private:watch', () => {
 });
 
 // default tasks - 
-task('private:inital', series(['private:copy_gov_files', 'private:compile_sass', 'private:minify_scripts']));
-task('run:dev', series(['private:inital', 'private:watch']));
+task('run:dev', series(['private:copy_gov_files', 'private:compile_sass', 'private:minify_scripts', 'private:watch']));
