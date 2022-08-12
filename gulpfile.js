@@ -25,7 +25,7 @@ task('run:clean', function () {
 });
 
 // copy govuk-frontend-toolkit to wwwroot
-task('private:copyGovTask', () => {
+task('private:copy_gov_files', () => {
     gulp.src(govpath.govukimage)
         .pipe(gulp.dest(wwwrootpath.images));
 
@@ -41,24 +41,24 @@ task('private:copyGovTask', () => {
         .pipe(gulp.dest(wwwrootpath.css));
 });
 
-task('private:sassTask', () => {
+task('private:compile_sass', () => {
     return gulp.src(['./scss/**/*.scss', '!./scss/**/frontend.scss'])
         .pipe(sass({ outputStyle: 'compressed' }))
         .pipe(gulp.dest('./wwwroot/css'));
 });
 
-task('private:jsTask', () => {
+task('private:minify_scripts', () => {
     return gulp.src(['./javascript/**/*.js'])
         .pipe(minify({ ignoreFiles: ['.min.js'], noSource: true }))
         .pipe(gulp.dest('./wwwroot/js'));
 });
 
 // watch scss files for changes excluding frontend toolkit, 
-task('private:watchTask', () => {
-    gulp.watch(['./scss/**/*.scss'], series(['private:sassTask']));
-    gulp.watch(['./javascript/**/*.js'], series(['private:jsTask']));
+task('private:watch', () => {
+    gulp.watch(['./scss/**/*.scss'], series(['private:compile_sass']));
+    gulp.watch(['./javascript/**/*.js'], series(['private:minify_scripts']));
 });
 
 // default tasks - 
-task('private:initTask', series(['private:copyGovTask', 'private:sassTask', 'private:jsTask']));
-task('run:dev', series(['private:initTask', 'private:watchTask']));
+task('private:inital', series(['private:copy_gov_files', 'private:compile_sass', 'private:minify_scripts']));
+task('run:dev', series(['private:inital', 'private:watch']));
