@@ -48,7 +48,7 @@ task('private:compile_sass', () => {
 });
 
 task('private:minify_scripts', () => {
-    return gulp.src(['./javascript/**/*.js'])
+    return gulp.src(['./script/**/*.js'])
         .pipe(minify({ ignoreFiles: ['.min.js'], noSource: true }))
         .pipe(gulp.dest('./wwwroot/js'));
 });
@@ -56,7 +56,7 @@ task('private:minify_scripts', () => {
 // watch scss files for changes excluding frontend toolkit, 
 task('private:watch', () => {
     gulp.watch(['./scss/**/*.scss'], series(['private:compile_sass']));
-    gulp.watch(['./javascript/**/*.js'], series(['private:minify_scripts']));
+    gulp.watch(['./script/**/*.js'], series(['private:minify_scripts']));
 });
 
 // default tasks - 

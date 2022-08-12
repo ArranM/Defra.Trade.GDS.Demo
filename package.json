@@ -4,7 +4,8 @@
   "description": "Developer Portal GDS test",
   "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "author": "",
   "license": "ISC",
@@ -14,7 +15,8 @@
     "gulp-minify": "^3.1.0",
     "gulp-rimraf": "^1.0.0",
     "gulp-sass": "^5.1.0",
-    "sass": "^1.54.4"
+    "sass": "^1.54.4",
+    "vitest": "^0.21.1"
   },
   "dependencies": {
     "glob-parent": "^6.0.2"
