@@ -5,8 +5,12 @@ const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
 const ts = require("gulp-typescript");
+const sourcemaps = require('gulp-sourcemaps');
+const gulpif = require('gulp-if');
 
-let tsProject = ts.createProject('tsconfig.json');
+const isDev = () => {
+    return !!process.argv.find(el => el === '--config-dev');
+};
 
 const govpath = {
     govukimage: './node_modules/govuk-frontend/govuk/assets/images/*',
@@ -27,15 +31,18 @@ const jsFiles =
     "bundle2": ['script/add2numbers.ts', 'script/date-time.ts']
 };
 
-var defaultTasks = Object.keys(jsFiles);
+let tsProject = ts.createProject('tsconfig.json');
+let defaultTasks = Object.keys(jsFiles);
 
 defaultTasks.forEach(function (libName) {
     task('scripts:' + libName, function () {
         return src(jsFiles[libName])
+            .pipe(gulpif(isDev(), sourcemaps.init()))
             .pipe(tsProject())
             .pipe(concat(libName + '.js'))
             .pipe(uglify())
             .pipe(rename({ suffix: '.min' }))
+            .pipe(gulpif(isDev(), sourcemaps.write()))
             .pipe(dest('./wwwroot/js'));
     });
 });
@@ -45,7 +52,6 @@ task('private:bundle_typescript',
         defaultTasks.map(function (name) { return 'scripts:' + name; })
     )
 );
-
 
 // Remove copied and compiled files from wwwroot
 task('clean', function () {
@@ -81,8 +87,10 @@ task('private:compile_sass', () => {
 
 task('private:minify_javascript', () => {
     return src(['./script/**/*.js'])
+        .pipe(gulpif(isDev(), sourcemaps.init()))
         .pipe(uglify())
         .pipe(rename({ suffix: '.min' }))
+        .pipe(gulpif(isDev(), sourcemaps.write()))
         .pipe(dest('./wwwroot/js'));
 });
 
