@@ -65,9 +65,9 @@
         </div>
     </footer>
 
-    @await RenderSectionAsync("Scripts", required: false)
 
     <script src="~/assets/js/all.min.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
     <script>
         window.GOVUKFrontend.initAll()
     </script>

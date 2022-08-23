@@ -3,7 +3,10 @@ const sass = require('gulp-sass')(require('sass'));
 const rimraf = require('gulp-rimraf');
 const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
 const ts = require("gulp-typescript");
+
+let tsProject = ts.createProject('tsconfig.json');
 
 const govpath = {
     govukimage: './node_modules/govuk-frontend/govuk/assets/images/*',
@@ -16,11 +19,37 @@ const wwwrootpath = {
     fonts: './wwwroot/assets/fonts',
     js: './wwwroot/assets/js',
     css: './wwwroot/assets/css'
-}
+};
+
+const jsFiles =
+{
+    "bundle1": ['script/hello.ts', 'script/goodbye.ts'],
+    "bundle2": ['script/add2numbers.ts', 'script/date-time.ts']
+};
+
+var defaultTasks = Object.keys(jsFiles);
+
+defaultTasks.forEach(function (libName) {
+    task('scripts:' + libName, function () {
+        return src(jsFiles[libName])
+            .pipe(tsProject())
+            .pipe(concat(libName + '.js'))
+            .pipe(uglify())
+            .pipe(rename({ suffix: '.min' }))
+            .pipe(dest('./wwwroot/js'));
+    });
+});
+
+task('private:bundle_typescript',
+    series(
+        defaultTasks.map(function (name) { return 'scripts:' + name; })
+    )
+);
+
 
 // Remove copied and compiled files from wwwroot
-task('run:clean', function () {
-    return src([wwwrootpath.images + '/*', wwwrootpath.fonts + '/*', wwwrootpath.js + '/*', wwwrootpath.css + '/*'], { read: false })
+task('clean', function () {
+    return src([wwwrootpath.images + '/*', wwwrootpath.fonts + '/*', wwwrootpath.js + '/*', wwwrootpath.css + '/*', './wwwroot/js/*', './wwwroot/css/*'], { read: false })
         .pipe(rimraf());
 });
 
@@ -50,16 +79,8 @@ task('private:compile_sass', () => {
         .pipe(dest('./wwwroot/css'));
 });
 
-task('private:minify_scripts', () => {
+task('private:minify_javascript', () => {
     return src(['./script/**/*.js'])
-        .pipe(uglify())
-        .pipe(rename({ suffix: '.min' }))
-        .pipe(dest('./wwwroot/js'));
-});
-
-task("private:typescript", function () {
-    return src('script/**/*.ts')
-        .pipe(ts())
         .pipe(uglify())
         .pipe(rename({ suffix: '.min' }))
         .pipe(dest('./wwwroot/js'));
@@ -68,9 +89,9 @@ task("private:typescript", function () {
 // watch scss files for changes excluding frontend toolkit, 
 task('private:watch', () => {
     watch(['./scss/**/*.scss'], series(['private:compile_sass']));
-    watch(['./script/**/*.js'], series(['private:minify_scripts']));
-    watch(['./script/**/*.ts'], series(['private:typescript']));
+    watch(['./script/**/*.js'], series(['private:minify_javascript']));
+    watch(['./script/**/*.ts'], series(['private:bundle_typescript']));
 });
 
 // default tasks - 
-task('run:dev', series(['private:copy_gov_files', 'private:compile_sass', 'private:minify_scripts', 'private:typescript', 'private:watch']));
+task('default', series(['private:copy_gov_files', 'private:compile_sass', 'private:minify_javascript', 'private:bundle_typescript', 'private:watch']));
